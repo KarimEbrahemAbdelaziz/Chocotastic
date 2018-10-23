@@ -22,6 +22,20 @@
 
 import UIKit
 
+extension String {
+  subscript (bounds: CountableClosedRange<Int>) -> String {
+    let start = index(startIndex, offsetBy: bounds.lowerBound)
+    let end = index(startIndex, offsetBy: bounds.upperBound)
+    return String(self[start...end])
+  }
+  
+  subscript (bounds: CountableRange<Int>) -> String {
+    let start = index(startIndex, offsetBy: bounds.lowerBound)
+    let end = index(startIndex, offsetBy: bounds.upperBound)
+    return String(self[start..<end])
+  }
+}
+
 enum CardType {
   case
   Unknown,
@@ -148,7 +162,7 @@ enum CardType {
   }
   
   func format(noSpaces: String) -> String {
-    guard noSpaces.characters.count >= 4 else {
+    guard noSpaces.count >= 4 else {
       //No formatting necessary if <= 4
       return noSpaces
     }
@@ -165,15 +179,15 @@ enum CardType {
     switch self {
     case .Amex:
       //Amex format is xxxx xxxxxx xxxxx
-      guard noSpaces.characters.count > 10 else {
+      guard noSpaces.count > 10 else {
         //No further formatting required.
         return formattedString + noSpaces.substring(from: index4)
       }
       
       
       let index10 = noSpaces.index(startIndex, offsetBy: 10)
-      let nextSixRange = Range(index4..<index10)
-      let nextSix = noSpaces.substring(with: nextSixRange)
+      let nextSixRange = Range(index4.hashValue...index10.hashValue) //Range(index4..<index10)
+      let nextSix = noSpaces[nextSixRange] //.substring(with: nextSixRange)
       let remaining = noSpaces.substring(from: index10)
       return formattedString + nextSix + " " + remaining
     default:
@@ -184,8 +198,8 @@ enum CardType {
       }
       
       let index8 = noSpaces.index(startIndex, offsetBy: 8)
-      let nextFourRange = Range(index4..<index8)
-      let nextFour = noSpaces.substring(with: nextFourRange)
+      let nextFourRange = Range(index4.hashValue..<index8.hashValue)
+      let nextFour = noSpaces[nextFourRange]//.substring(with: nextFourRange)
       formattedString += nextFour + " "
       
       guard noSpaces.characters.count > 12 else {
@@ -195,8 +209,8 @@ enum CardType {
       }
       
       let index12 = noSpaces.index(startIndex, offsetBy: 12)
-      let followingFourRange = Range(index8..<index12)
-      let followingFour = noSpaces.substring(with: followingFourRange)
+      let followingFourRange = Range(index8.hashValue..<index12.hashValue)
+      let followingFour = noSpaces[followingFourRange] //.substring(with: followingFourRange)
       let remaining = noSpaces.substring(from: index12)
       return formattedString + followingFour + " " + remaining
     }

@@ -31,10 +31,8 @@ class ChocolateButton: UIButton {
     }
   }
   
-  enum ButtonType {
-    case
-    Standard,
-    Warning
+  enum ButtonTypes {
+    case Standard, Warning
   }
   
   ///Workaround for enum values not being IBInspectable.
@@ -49,7 +47,7 @@ class ChocolateButton: UIButton {
   }
   
   
-  private var type: ButtonType = .Standard {
+  private var type: ButtonTypes = .Standard {
     didSet {
       updateBackgroundColorForCurrentType()
     }
